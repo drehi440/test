@@ -1,0 +1,166 @@
+Before begin:
+add in .bashrc:
+export PATH="/opt/miniconda3/bin":$PATH
+
+
+If already airflow exists:
+--------------------------
+/opt/miniconda3/bin/airflow webserver -p 8099 &     This will return a PID(which is used to kill the task if required)
+
+----- IF THIS THORWS ERROR ---- this is due to the limitations of sqlite db.-- only work with single instance
+
+Following steps will be good to be proceeded:
+---------------------------------------------
+
+
+Change the following:
+1. to create a new db: sqlite3 /home/tema8001/airflow/dbName.db ---> .databases[to view file] ---> .quit[To exit]
+
+// sqlite3 /home/tema8001/airflow/airflow1.db .dump > /home/tema8001/airflow1.sql this will save the db instance:, for next time onwards: if no db is present in airflow, use this command: sqlite3 /home/tema8001/airflow/airflow1.db < /home/tema8001/airflow1.sql
+
+2. if facing issues with sqlite: use a new db: vi airflow.cfg:
+3. change the sql db string to the new db created : /home/tema8001/airflow/dbName.db
+3. load_example --  Change from True to False
+
+export AIRFLOW_HOME=~/airflow
+/opt/miniconda3/bin/airflow initdb
+
+
+tparhegapq010:
+
+Terminal:
+
+change to apservices:
+ps -ef |grep 9089
+: If any process running then 
+kill -9 process id
+eg.
+ps -ef |grep 9089
+7655     22401 21715  2 10:18 pts/4    00:00:09 /usr/local/bin/python3.5 /usr/local/bin/airflow webserver -p 9089
+7655     25639 25560  0 10:25 pts/8    00:00:00 grep 9089
+--------------------------------------------------------
+          <PID>
+kill -9 22401
+cd
+export AIRFLOW_HOME=~/airflow
+
+/usr/local/bin/airflow initdb
+/opt/cloudera/parcels/Anaconda-2.5.0/bin/airflow 
+/usr/local/bin/airflow webserver -p 9089
+/opt/miniconda3/bin/python /usr/local/bin/airflow scheduler -p
+
+Terminal 2:
+airflow scheduler -p
+
+mkdir dags
+vi run1.py
+python /home/tema8001/airflow/dags/run1.py
+airflow list_dags
+airflow run runTestRehi print_date 2015-05-21
+
+--THIS WILL SAVE THE LOGS IN A FILE:
+cat /home/tema8001/airflow/logs/runTestRehi/print_date/2015-05-21T00:00:00
+
+--- Start the webserver in nohup with a PID for future use:
+nohup /opt/miniconda3/bin/airflow webserver -p 9099 &`
+PID: 3377   (use to kill the process)
+
+[joshyo01@tparhegapd034 dags]$ /opt/miniconda3/bin/python /opt/miniconda3/bin/airflow scheduler -p
+55883
+
+netstat -a | grep 9099
+
+Open UI:
+Before opening UI: we need to run a scheduler:
+----------------------------------------------
+/opt/miniconda3/bin/airflow scheduler -p
+
+http://tparhegapd034.nielsen.com:9099/admin/
+
+
+airflow run pre_nas_hdfs PRE_NAS_TO_HDFS 2018-06-23
+
+---------- JAVA Jar ---------------------
+
+hadoop jar AirFlowRun-0.0.1-SNAPSHOT.jar com.rehi.testAirflow.fileWriteToHdfs /ap_data/airflow_Poc/tema8001/test.1 /user/tema8001/test.1
+
+hadoop jar AirFlowRun-0.0.1-SNAPSHOT.jar com.rehi.testAirflow.fileWriteToHdfs /home/tema8001/test2 /user/tema8001/test2
+
+java -cp java -cp AirFlowRun-0.0.1-SNAPSHOT.jar com.rehi.testAirflow.testRun AIRFLOW
+
+echo 'tema8001     ALL=(ALL)       NOPASSWD: ALL' | sudo tee --append /etc/sudoers
+
+
+
+
+How to Handle Impala queries during heavy loads? What is the workaround for failing queries and how to handle long running queries? What should be the optimal configuration when we have Memory as constraint?
+
+SOLUTION:
+There is no automatic re run for failed query, user need to detect the issue and resubmit the job. In CM-> IMPALA queries. 
+ Enable Dynamic Resource pooling(DRP), this won't clog too many queries.
+BLOCKERS: Current users running with all resources, after enabling DRP will face performance issues, as due to limit in available resource, will not be able to consume all resources.
+Best is to educate user and adapt to the changes.
+
+
+
+
+
+
+
+Harini"
+-----------
+1ST Time command:
+a. open .bashrc:
+cd
+vi .bashrc
+(insert)
+export PATH="/opt/cloudera/parcels/Anaconda-2.5.0/bin":$PATH
+export AIRFLOW_HOME=~/airflow
+-------------- EOF -----------
+
+b. reload the profile:
+source .bashrc
+
+c. create airflow folder:
+Airflow folder will be created with AIRFLOW_HOME set in bashrc. Change accordingly
+/opt/cloudera/parcels/Anaconda-2.5.0/bin/airflow initdb
+
+/home/gaha8004
+[gaha8004@tparhegapq005 ~]$ ll
+total 4
+drwxrwxr-x 4 gaha8004 gaha8004 4096 Mar 27 08:02 airflow
+[gaha8004@tparhegapq005 ~]$
+
+d. Inside airflow:
+cd airflow
+mkdir dags
+cd dags
+
+Inside dags we need to place our .py dags to be reflected under the console
+Compile the .py files to remove any errors before you start airflow
+
+
+
+#1st Terminal:
+---------------
+ps -ef | grep <port we need to run>
+If any process running try other port else we can use this port.
+/opt/cloudera/parcels/Anaconda-2.5.0/bin/airflow webserver -p 9089
+
+For a successfull start you will see:
+
+  .format(x=modname), ExtDeprecationWarning
+[2019-03-27 08:15:08,589] {models.py:189} INFO - Filling up the DagBag from /home/gaha8004/airflow/dags
+[2019-03-27 08:15:08,667] {models.py:189} INFO - Filling up the DagBag from /home/gaha8004/airflow/dags
+[2019-03-27 08:15:08,764] {models.py:189} INFO - Filling up the DagBag from /home/gaha8004/airflow/dags
+[2019-03-27 08:15:08,897] {models.py:189} INFO - Filling up the DagBag from /home/gaha8004/airflow/dags
+
+
+2nd Terminal:
+/opt/cloudera/parcels/Anaconda-2.5.0/bin/python /opt/cloudera/parcels/Anaconda-2.5.0/bin/airflow scheduler -p
+
+
+Open Web Browser:
+hostname:9089/admin/
+FOR UAT:
+http://tparhegapq005.enterprisenet.org:9089/admin/
